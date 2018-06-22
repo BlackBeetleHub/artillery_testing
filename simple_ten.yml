@@ -1,0 +1,46 @@
+config:
+  target: 'https://apps4.store'
+  phases:
+    - duration: 15
+      arrivalRate: 1
+      count: 10
+  defaults:
+    headers:
+      x-my-service-auth: '98740183827100218829567'
+  variables:
+    appsId:
+        [
+          "b3ff4e3c-9d32-4615-90e2-0647ae66f595",
+          "ed1d5a9b-7fd1-4213-9f3c-290f501ba578",
+          "53ad363c-2cc7-48f9-973c-ba83acf8e9b2",
+          "c49a71b8-5db1-4685-8cc7-f4a744869dad"
+        ]
+    appsName:
+        [
+          "manager-for-gphotos-pro",
+          "gclient-for-google-photos-pro",
+          "studio-photo-collage",
+          "screen-shot-tool",
+        ]
+  processor: "./tool.js"
+scenarios:
+  - flow:
+    - get:
+        url: "/"
+    - loop:
+          - log: "Element!"
+          - get:
+              url: "/store/downloadapplicationinstaller?applicationId={{ $loopElement }}"
+      over: appsId
+    - loop:
+          - get:
+              url: "/store/details/{{ $loopElement }}"
+          - get:
+              url: "/images/uploaded/{{ $loopElement }}/screens/0.jpg"
+          - get:
+              url: "/images/uploaded/{{ $loopElement }}/screens/1.jpg"
+          - get:
+              url: "/images/uploaded/{{ $loopElement }}/screens/2.jpg"
+          - get:
+              url: "/images/uploaded/{{ $loopElement }}/screens/3.jpg"
+      over: appsName
